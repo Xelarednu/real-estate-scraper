@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 import time
 import pandas as pd
 from pathlib import Path
@@ -55,6 +55,7 @@ def get_estates():
                 property_size = float(estate["property_size"])
                 room_count = estate["room_count"]
                 date_published = estate["date_published"].split("T")[0]
+                # link = link_builder(estate["address"]["parish_name"], estate["address"]["city_name"], estate["address"]["street_name"], estate["friendly_id"])
                 is_sold = False
 
                 if (street_name == None):
@@ -81,7 +82,39 @@ def update_sold_status():
 def wipe_raw_table() -> None:
     model.delete_all("estates_raw")
 
+def link_builder(parish_name: str, city_name: str, street_name: str, friendly_id: str) -> str:
+    link = "https://www.city24.ee/en/real-estate/apartments-for-sale/"
+
+    names_list = est_letters_check([parish_name, city_name, street_name])
+
+    parish_formatted = parish_name.lower()
+    link += parish_formatted + " "
+    city_formatted = city_name.lower()
+    link += city_formatted + " "
+    street_formatted = street_name.lower()
+    link += street_formatted + "/"
+    link += friendly_id
+    # link.replace(" ", "-")
+
+    return link.replace(" ", "-")
+
+def est_letters_check(name_list: list) -> list:
+    name_list_cleaned = []
+    letters_list = ["ä", "ö", "ü", "õ"]
+    for name in name_list:
+        if letters_list in name:
+            name_cleaned = name.replace("ä", "a")
+            name_list_cleaned.append(name_cleaned)
+        if "ö" in name:
+            pass
+        if "ü" in name:
+            pass
+        if "õ" in name:
+            pass
+    pass
+
 get_estates()
 model.insert_multiple(model.get_all("estates_raw"), "estates_final")
 update_sold_status()
-export_to_excel(model.get_all("estates_final"))
+# export_to_excel(model.get_all("estates_final"))
+# print(link_builder("Narva linn", "Pahklimae", "Pahklimae tn", "49873676"))

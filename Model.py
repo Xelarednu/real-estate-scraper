@@ -42,11 +42,11 @@ class Model():
 
         conn.close()
     
-    def validate_table_name(self: Model, table_name: str) -> None:
+    def validate_table_name(self, table_name: str) -> None:
         if (table_name not in self.ALLOWED_TABLES):
             raise ValueError("Invalid table name:" + table_name)
 
-    def insert_multiple(self: Model, data: list, table_name: str) -> None:
+    def insert_multiple(self, data: list, table_name: str) -> None:
         self.validate_table_name(table_name)
 
         conn = sqlite3.connect(self.DB_NAME)
@@ -59,12 +59,12 @@ class Model():
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """, estate)
             except sqlite3.IntegrityError as error:
-                print(data, error)
+                print(data, error, table_name)
         
         conn.commit()
         conn.close()
     
-    def insert(self: Model, data: tuple, table_name: str) -> None:
+    def insert(self, data: tuple, table_name: str) -> None:
         self.validate_table_name(table_name)
         
         conn = sqlite3.connect(self.DB_NAME)
@@ -76,12 +76,12 @@ class Model():
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, data)
         except sqlite3.IntegrityError as error:
-            print(data, error)
+            print(data, error, table_name)
         
         conn.commit()
         conn.close()
     
-    def get_all(self: Model, table_name: str) -> list:
+    def get_all(self, table_name: str) -> list:
         self.validate_table_name(table_name)
 
         conn = sqlite3.connect(self.DB_NAME)
@@ -97,7 +97,7 @@ class Model():
 
         return data
 
-    def update_sold_status(self: Model) -> None:
+    def update_sold_status(self) -> None:
         estates_raw = "estates_raw"
         estates_final = "estates_final"
 
@@ -105,9 +105,13 @@ class Model():
         cursor = conn.cursor()
 
         cursor.execute(f"""
-            SELECT * FROM {estates_final}
+            SELECT *
+            FROM {estates_final}
+
             EXCEPT
-            SELECT * FROM {estates_raw}
+
+            SELECT *
+            FROM {estates_raw}
         """)
 
         data = cursor.fetchall()
@@ -123,7 +127,7 @@ class Model():
 
         conn.close()
     
-    def delete_all(self: Model, table_name: str) -> None:
+    def delete_all(self, table_name: str) -> None:
         self.validate_table_name(table_name)
         conn = sqlite3.connect(self.DB_NAME)
         cursor = conn.cursor()
@@ -131,5 +135,5 @@ class Model():
         cursor.execute(f"""
             DELETE FROM {table_name}
         """)
-
+        conn.commit()
         conn.close()
