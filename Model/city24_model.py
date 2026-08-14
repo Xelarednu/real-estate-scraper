@@ -161,8 +161,6 @@ class Model():
             """, (estate_id, ))
             conn.commit()
 
-        # TODO Add status check for estates marked as sold
-
         cursor.execute(f"""
             SELECT *
             FROM {estates_final} AS f
@@ -192,7 +190,6 @@ class Model():
         conn = sqlite3.connect(self.DB_NAME)
         cursor = conn.cursor()
 
-        # TODO Add r.link to SET
         cursor.execute(f"""
             UPDATE {estates_final} AS f
             SET (address, price, price_per_unit, property_size, room_count, link) = (

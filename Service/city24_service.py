@@ -1,10 +1,8 @@
-from Controller.drive_controller import DriveController
 from Controller.city24_controller import City24Controller
 from Model.city24_model import Model
 
 class City24Service():
-    def __init__(self, drive: DriveController, city24: City24Controller):
-        self.drive = drive
+    def __init__(self, city24: City24Controller):
         self.city24: City24Controller = city24
 
     def scrape(self):
