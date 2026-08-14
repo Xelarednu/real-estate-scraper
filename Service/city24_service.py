@@ -1,5 +1,4 @@
 from Controller.city24_controller import City24Controller
-from Model.city24_model import Model
 
 class City24Service():
     def __init__(self, city24: City24Controller):
