@@ -1,14 +1,14 @@
 from Service.city24_service import City24Service
 from Service.drive_service import DriveService
-from Controller.drive_controller import DriveController
-from Controller.city24_controller import City24Controller
-from Model.city24_model import Model
 
-city24 = City24Service(City24Controller(Model()))
-drive = DriveService(DriveController())
+class App():
+    def __init__(self, city24_service: City24Service, drive_service: DriveService):
+        self.city24_service = city24_service
+        self.drive_service = drive_service
 
-city24.scrape()
-city24.fill_final_table()
-city24.updates()
-city24.export()
-drive.upload_file()
+    def run(self):
+        self.city24_service.scrape()
+        self.city24_service.fill_final_table()
+        self.city24_service.updates()
+        self.city24_service.export()
+        self.drive_service.upload_to_drive()
