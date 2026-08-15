@@ -8,7 +8,6 @@ class Model():
         conn = sqlite3.connect(self.DB_NAME)
         cursor = conn.cursor()
 
-        # TODO Add floor column
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS estates_raw
             (
@@ -21,13 +20,13 @@ class Model():
                 date_published TEXT,
                 link TEXT,
                 is_sold INTEGER DEFAULT 0,
-                date_sold TEXT DEFAULT NULL
+                date_sold TEXT DEFAULT NULL,
+                floor TEXT
             )
         """)
 
         conn.commit()
 
-        # TODO Add floor column
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS estates_final
             (
@@ -40,7 +39,8 @@ class Model():
                 date_published TEXT,
                 link TEXT,
                 is_sold INTEGER DEFAULT 0,
-                date_sold TEXT DEFAULT NULL
+                date_sold TEXT DEFAULT NULL,
+                floor TEXT
             )
         """)
 
@@ -88,8 +88,8 @@ class Model():
         for estate in data:
             try:
                 cursor.execute(f"""
-                    INSERT INTO {table_name} (id, address, price, price_per_unit, property_size, room_count, date_published, link, is_sold, date_sold)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO {table_name} (id, address, price, price_per_unit, property_size, room_count, date_published, link, is_sold, date_sold, floor)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, estate)
             except sqlite3.IntegrityError as error:
                 pass
@@ -104,8 +104,8 @@ class Model():
 
         try:
             cursor.execute(f"""
-                INSERT INTO {where} (id, address, price, price_per_unit, property_size, room_count, date_published, link)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO {where} (id, address, price, price_per_unit, property_size, room_count, date_published, link, floor)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, data)
         except sqlite3.IntegrityError as error:
             print(data, error, where)
@@ -192,8 +192,8 @@ class Model():
 
         cursor.execute(f"""
             UPDATE {estates_final} AS f
-            SET (address, price, price_per_unit, property_size, room_count, link) = (
-                SELECT r.address, r.price, r.price_per_unit, r.property_size, r.room_count, r.link
+            SET (address, price, price_per_unit, property_size, room_count, link, floor) = (
+                SELECT r.address, r.price, r.price_per_unit, r.property_size, r.room_count, r.link, r.floor
                 FROM {estates_raw} AS r
                 WHERE r.id = f.id
             )

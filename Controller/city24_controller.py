@@ -61,6 +61,8 @@ class City24Controller():
                     property_size = float(estate["property_size"])
                     room_count = estate["room_count"]
                     date_published = estate["date_published"].split("T")[0]
+                    total_floors = estate["attributes"]["TOTAL_FLOORS"]
+                    floor = estate["attributes"]["FLOOR"]
 
                     if (parish_name == None):
                         parish_name = ""
@@ -70,14 +72,20 @@ class City24Controller():
                         street_name = ""
                     if (house_number == None):
                         house_number = ""
+                    if (total_floors == None):
+                        total_floors = ""
+                    if (floor == None):
+                        floor = ""
                     if (price_per_unit == None):
                         price_per_unit = 0.0
                     else:
                         float(price_per_unit)
+
+                    apartment_floor = str(floor) + '/' + str(total_floors)
                     
                     link = self.__link_builder(parish_name, city_name, street_name, estate["friendly_id"])
 
-                    entry = (estate_id, street_name + " " + house_number, price, price_per_unit, property_size, room_count, date_published, link)
+                    entry = (estate_id, street_name + " " + house_number, price, price_per_unit, property_size, room_count, date_published, link, apartment_floor)
 
                     self.model.insert(entry, "estates_raw")
                 
