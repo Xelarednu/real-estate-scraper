@@ -1,8 +1,6 @@
 import requests
 # from bs4 import BeautifulSoup
 import time
-import pandas as pd
-import datetime
 from pathlib import Path
 from Model.city24_model import Model
 
@@ -30,11 +28,6 @@ class City24Controller():
 
     def __init__(self, model: Model):
         self.model = model
-
-    def export_to_excel(self, data: dict):
-        columns = self.model.get_column_names()
-        data_frame = pd.DataFrame(data, columns=columns)
-        data_frame.to_excel(f"results/result_{datetime.date.today().strftime('%Y-%m-%d')}.xlsx", index=False)
 
     def get_estates(self):
         self.__wipe_raw_table()
@@ -136,6 +129,3 @@ class City24Controller():
 
     def fill_final_table(self) -> None:
         self.model.insert_multiple(self.model.get_all("estates_raw"), "estates_final")
-
-    def export(self) -> None:
-        self.export_to_excel(self.model.get_all("estates_final"))
