@@ -9,8 +9,6 @@ class App():
         self.export_service = export_service
 
     def run(self):
-        self.city24_service.scrape()
-        self.city24_service.fill_final_table()
-        self.city24_service.updates()
+        self.city24_service.process()
         self.export_service.export()
         self.drive_service.upload_to_drive()

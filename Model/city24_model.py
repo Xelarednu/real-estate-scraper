@@ -133,6 +133,17 @@ class Model():
     #     conn = sqlite3.connect(self.DB_NAME)
     #     cursor = conn.cursor()
 
+    def delete_all(self, table_name: str) -> None:
+        self.validate_table_name(table_name)
+
+        conn = sqlite3.connect(self.DB_NAME)
+        cursor = conn.cursor()
+
+        cursor.execute(f"""
+            DELETE FROM {table_name}
+        """)
+
+        self.disconnect(conn)
 
     # Repo
     def update_sold_status(self, estates_raw: str, estates_final: str) -> None:
@@ -202,18 +213,6 @@ class Model():
                 FROM {estates_raw} AS r
                 WHERE r.id = f.id
             )
-        """)
-
-        self.disconnect(conn)
-    
-    def delete_all(self, table_name: str) -> None:
-        self.validate_table_name(table_name)
-
-        conn = sqlite3.connect(self.DB_NAME)
-        cursor = conn.cursor()
-
-        cursor.execute(f"""
-            DELETE FROM {table_name}
         """)
 
         self.disconnect(conn)

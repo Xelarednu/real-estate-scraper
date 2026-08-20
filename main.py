@@ -10,11 +10,11 @@ from app import App
 def main():
     model = Model()
 
-    city24_controller = City24Controller(model)
+    city24_controller = City24Controller()
     drive_controller = DriveController()
-    export_controller = ExportController(model)
+    export_controller = ExportController()
 
-    city24_service = City24Service(city24_controller)
+    city24_service = City24Service(city24_controller, model)
     drive_service = DriveService(drive_controller)
     export_service = ExportService(export_controller, model)
 

@@ -7,4 +7,4 @@ class ExportService():
         self.model = model
 
     def export(self) -> None:
-        self.export_controller.export_to_excel(self.model.get_all("estates_final"))
+        self.export_controller.export_to_excel(self.model.get_all("estates_final"), self.model.get_column_names())

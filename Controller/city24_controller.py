@@ -2,10 +2,10 @@ import requests
 # from bs4 import BeautifulSoup
 import time
 from pathlib import Path
-from Model.city24_model import Model
 
 class City24Controller():
     URL = "https://api.city24.ee/en_GB/search/realties"
+    estates_list: list = []
 
     headers = {
         "User-Agent": "Leaper/1.0",
@@ -26,12 +26,7 @@ class City24Controller():
         "TE": "trailers",
     }
 
-    def __init__(self, model: Model):
-        self.model = model
-
-    def get_estates(self):
-        self.__wipe_raw_table()
-
+    def get_estates(self) -> list:
         page_number = 1
 
         while True:
@@ -78,16 +73,13 @@ class City24Controller():
                     
                     link = self.__link_builder(parish_name, city_name, street_name, estate["friendly_id"])
 
-                    entry = (estate_id, street_name + " " + house_number, price, price_per_unit, property_size, room_count, date_published, link, apartment_floor)
-
-                    self.model.insert(entry, "estates_raw")
+                    self.estates_list.append((estate_id, street_name + " " + house_number, price, price_per_unit, property_size, room_count, date_published, link, apartment_floor))
                 
                 page_number += 1
             else:
                 print("Failed with: ", response.status_code)
-
-    def __wipe_raw_table(self) -> None:
-        self.model.delete_all("estates_raw")
+  
+        return self.estates_list
 
     def __link_builder(self, parish_name: str, city_name: str, street_name: str, friendly_id: str) -> str:
         link = "https://www.city24.ee/en/real-estate/apartments-for-sale/"
@@ -120,12 +112,3 @@ class City24Controller():
                 name = name.replace("õ", "o")
             names_list_formatted.append(name)
         return names_list_formatted
-
-    def update_sold_status(self):
-        self.model.update_sold_status('estates_raw', 'estates_final')
-
-    def update_entries(self):
-        self.model.update_estates('estates_raw', 'estates_final')
-
-    def fill_final_table(self) -> None:
-        self.model.insert_multiple(self.model.get_all("estates_raw"), "estates_final")
